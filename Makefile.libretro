@@ -65,6 +65,8 @@ else ifneq (,$(findstring rpi3,$(platform)))
 	override platform += unix
 endif
 
+platform=funkey
+
 prefix := /usr
 libdir := $(prefix)/lib
 
@@ -149,6 +151,42 @@ else ifeq ($(platform), classic_armv7_a7)
 	    LDFLAGS += -static-libgcc -static-libstdc++
 	  endif
 	endif
+
+else ifeq ($(platform), funkey)
+   TARGET := $(TARGET_NAME)_libretro.so
+   OD_TOOLCHAIN ?= /opt/FunKey-sdk-2.0.0/
+   CC := $(OD_TOOLCHAIN)bin/arm-funkey-linux-musleabihf-gcc
+   CXX := $(OD_TOOLCHAIN)bin/arm-funkey-linux-musleabihf-g++
+   LD := $(OD_TOOLCHAIN)bin/arm-funkey-linux-musleabihf-gcc
+   AR = $(OD_TOOLCHAIN)bin/arm-funkey-linux-musleabihf-ar
+   fpic := -fPIC
+   SHARED := -shared -Wl,--version-script=link.T -Wl,--no-undefined -fPIC
+   CFLAGS += -Ofast \
+   -flto=4 -fwhole-program -fuse-linker-plugin \
+   -fdata-sections -ffunction-sections -Wl,--gc-sections \
+   -fno-stack-protector -fno-ident -fomit-frame-pointer \
+   -falign-functions=1 -falign-jumps=1 -falign-loops=1 \
+   -fno-unwind-tables -fno-asynchronous-unwind-tables -fno-unroll-loops \
+   -fmerge-all-constants -fno-math-errno \
+   -marm -mtune=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard -fPIC
+   CXXFLAGS += $(CFLAGS)
+   CPPFLAGS += $(CFLAGS)
+   ASFLAGS += $(CFLAGS)
+   HAVE_NEON = 1
+   ARCH = arm
+   BUILTIN_GPU = neon
+   HAVE_VFS_FD = 0
+    DEFINES += -std=c99 -D_GNU_SOURCE
+    DEFINES += -DHAVE_LOCALE
+   ifeq ($(shell echo `$(CC) -dumpversion` "< 4.9" | bc -l), 1)
+     CFLAGS += -march=armv7-a
+   else
+     CFLAGS += -march=armv7ve
+     # If gcc is 5.0 or later
+     ifeq ($(shell echo `$(CC) -dumpversion` ">= 5" | bc -l), 1)
+       LDFLAGS += -static-libgcc -static-libstdc++
+     endif
+   endif
 	
 # (armv8 a35, hard point, neon based) ###
 # Playstation Classic
