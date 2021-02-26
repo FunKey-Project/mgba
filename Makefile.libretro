@@ -65,8 +65,6 @@ else ifneq (,$(findstring rpi3,$(platform)))
 	override platform += unix
 endif
 
-platform=funkey
-
 prefix := /usr
 libdir := $(prefix)/lib
 
@@ -154,11 +152,11 @@ else ifeq ($(platform), classic_armv7_a7)
 
 else ifeq ($(platform), funkey)
    TARGET := $(TARGET_NAME)_libretro.so
-   OD_TOOLCHAIN ?= /opt/FunKey-sdk-2.0.0/
-   CC := $(OD_TOOLCHAIN)bin/arm-funkey-linux-musleabihf-gcc
-   CXX := $(OD_TOOLCHAIN)bin/arm-funkey-linux-musleabihf-g++
-   LD := $(OD_TOOLCHAIN)bin/arm-funkey-linux-musleabihf-gcc
-   AR = $(OD_TOOLCHAIN)bin/arm-funkey-linux-musleabihf-ar
+   #OD_TOOLCHAIN ?= /opt/FunKey-sdk-2.0.0/
+   #CC := $(OD_TOOLCHAIN)bin/arm-funkey-linux-musleabihf-gcc
+   #CXX := $(OD_TOOLCHAIN)bin/arm-funkey-linux-musleabihf-g++
+   #LD := $(OD_TOOLCHAIN)bin/arm-funkey-linux-musleabihf-gcc
+   #AR = $(OD_TOOLCHAIN)bin/arm-funkey-linux-musleabihf-ar
    fpic := -fPIC
    SHARED := -shared -Wl,--version-script=link.T -Wl,--no-undefined -fPIC
    CFLAGS += -Ofast \
